@@ -7,3 +7,4 @@ platform/metadata_linux-x64.rm
 scripts/build
 out/
 platform/libapp
+tmp

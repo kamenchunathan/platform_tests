@@ -6,13 +6,12 @@ app [
 
 import pf.Effects exposing [print!]
 
-Store : I32
+Store : I32 -> I32
 
 store : Store
-store = 10
+store = |_| 42069
 
 use! : Store => {}
-use! = |i|
-    print! (Inspect.to_str i)
+use! = |fs|
+    print! (Inspect.to_str (fs 89787))
     {}
-
