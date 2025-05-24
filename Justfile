@@ -1,5 +1,5 @@
-examples_dir := 'examples/'
-build_dir := 'examples/'
+examples_dir := 'examples'
+build_dir := 'out'
 
 build:
     just build-host
@@ -13,7 +13,7 @@ build-platform:
     roc ./scripts/build.roc
 
 build-host:
-    roc build platform/libapp.roc
+    # roc build platform/libapp.roc
     cargo build --release
 
 build-examples:

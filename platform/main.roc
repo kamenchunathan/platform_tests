@@ -1,14 +1,22 @@
-platform "wow" requires {} {
-        main : I32 -> I32,
+platform "wow" requires { Store } {
+        store : Store,
+        use! : Store => {},
     }
-    exposes []
+    exposes [Effects]
     packages {
     }
     imports []
     provides [
-        main_for_host!,
+        store_for_host!,
+        use_for_host!,
     ]
 
-main_for_host! : I32 => I32
-main_for_host! =  |i|
-    main i
+store_for_host! : I32 => Box Store
+store_for_host! = |_|
+    Box.box store
+
+use_for_host! : Box Store => {}
+use_for_host! = |boxed_store|
+    s = Box.unbox boxed_store
+    use! s
+

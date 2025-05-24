@@ -1,6 +1,12 @@
 app [
-    main,
-] { galena: platform "./main.roc" }
+    store,
+    use!,
+    Store,
+] { pf: platform "./main.roc" }
 
-main : I32 -> I32
-main = |_| 0
+Store : {}
+
+use! = |_| {}
+
+store = {}
+

@@ -98,3 +98,30 @@ pub unsafe extern "C" fn roc_shm_open(
 ) -> libc::c_int {
     libc::shm_open(name, oflag, mode as libc::c_uint)
 }
+
+pub fn call_roc_use(model: Model) {
+    extern "C" {
+        #[link_name = "roc__use_for_host_1_exposed"]
+        pub fn caller(_: RocBox<()>);
+    }
+
+    unsafe { caller(model.model) };
+}
+
+pub fn call_roc_store() -> Model {
+    extern "C" {
+        #[link_name = "roc__store_for_host_1_exposed"]
+        pub fn caller() -> RocBox<()>;
+    }
+
+    unsafe {
+        let store = caller();
+        Model::init(store)
+    }
+}
+
+// Effects
+#[no_mangle]
+pub unsafe extern "C" fn roc_fx_print(name: *const RocStr) {
+    println!("{}", *name);
+}

@@ -5,3 +5,5 @@ platform/linux-x64.a
 platform/linux-x64.rh
 platform/metadata_linux-x64.rm
 scripts/build
+out/
+platform/libapp
