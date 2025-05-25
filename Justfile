@@ -2,7 +2,6 @@ examples_dir := 'examples'
 build_dir := 'out'
 
 build:
-    just build-host
     just build-platform
     just build-examples
 
@@ -11,10 +10,6 @@ build-platform:
     set -euxo pipefail
     roc check ./platform/libapp.roc
     roc ./scripts/build.roc
-
-build-host:
-    # roc build platform/libapp.roc
-    cargo build --release
 
 build-examples:
     #!/usr/bin/env bash
@@ -30,5 +25,6 @@ build-examples:
         roc build --linker legacy $roc_source_file --emit-llvm-ir --output  "{{ build_dir }}/examples/" 
     done
 
-roc-clean:
-    rm platform/{dynhost,libapp.so,linux-x64.rh,metadata_linux-x64.rm}
+clean:
+    cargo clean
+    rm -f platform/{dynhost,libapp.so,linux-x64.{a,rm},metadata_linux-x64.rm,libapp} examples/*.ll

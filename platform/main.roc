@@ -1,22 +1,16 @@
-platform "wow" requires { Store } {
-        store : Store,
-        use! : Store => {},
-    }
+platform "wow" requires {} {}
     exposes [Effects]
     packages {
     }
     imports []
     provides [
-        store_for_host!,
-        use_for_host!,
+        main_for_host!,
     ]
 
-store_for_host! : I32 => Box Store
-store_for_host! = |_|
-    Box.box store
+inspect = |_|
+    42069
 
-use_for_host! : Box Store => {}
-use_for_host! = |boxed_store|
-    s = Box.unbox boxed_store
-    use! s
+main_for_host! : I32 => (I32 -> I32)
+main_for_host! = |_|
+    inspect
 
