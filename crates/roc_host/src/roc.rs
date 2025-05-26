@@ -1,6 +1,6 @@
 use core::ffi::c_void;
 
-use roc_std::RocStr;
+use roc_std::{RocBox, RocStr};
 
 #[no_mangle]
 pub unsafe extern "C" fn roc_alloc(size: usize, _alignment: u32) -> *mut c_void {
@@ -76,25 +76,56 @@ pub unsafe extern "C" fn roc_shm_open(
 }
 
 #[repr(C)]
-struct Void {
+pub struct Captures {
     _data: (),
     _marker: core::marker::PhantomData<(*mut u8, core::marker::PhantomPinned)>,
 }
 
-pub fn call_roc_main() {
+#[repr(C)]
+pub struct Msg {
+    _data: (),
+    _marker: core::marker::PhantomData<(*mut u8, core::marker::PhantomPinned)>,
+}
+
+pub fn call_roc_setup_callback() -> *const Captures {
     extern "C" {
-        #[link_name = "roc__main_for_host_0_caller"]
-        pub fn caller(_: *const i32, _: *const Void, _: *mut i32);
+        #[link_name = "roc__setup_callback_for_host_1_exposed_generic"]
+        fn caller(_: *mut Captures, _: i32);
     }
 
-    let a = Void {
+    let mut captures = Captures {
         _data: (),
         _marker: std::marker::PhantomData,
     };
 
-    let mut b = 0;
-    unsafe { caller(&0, &a, &mut b) }
-    println!("{b}");
+    unsafe { caller(&mut captures, 0) };
+    &captures as *const Captures
+}
+
+pub fn call_roc_callback(captures: *const Captures) -> Msg {
+    extern "C" {
+        #[link_name = "roc__setup_callback_for_host_0_caller"]
+        fn caller(_: *const i32, _: *const Captures, _: *mut Msg);
+    }
+
+    // TODO:  This may limit msg to being only a zst in roc as well
+    let mut ret = Msg {
+        _data: (),
+        _marker: std::marker::PhantomData,
+    };
+
+    unsafe { caller(&0, captures, &mut ret) };
+
+    ret
+}
+
+pub fn call__roc_handle_callback(msg: *const Msg) {
+    extern "C" {
+        #[link_name = "roc__handle_callback_for_host_1_exposed"]
+        fn caller(_: *const Msg);
+    }
+
+    unsafe { caller(msg) };
 }
 
 // Effects

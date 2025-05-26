@@ -8,3 +8,4 @@ scripts/build
 out/
 platform/libapp
 tmp
+examples/*.ll

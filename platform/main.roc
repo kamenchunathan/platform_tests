@@ -1,16 +1,27 @@
-platform "wow" requires {} {}
-    exposes [Effects]
+platform "wow" requires { Msg } {
+        on_event : Event -> Msg,
+        handle! : Msg => {},
+    }
+    exposes [Effects, Event]
     packages {
     }
     imports []
     provides [
-        main_for_host!,
+        setup_callback_for_host!,
+        handle_callback_for_host!,
     ]
 
-inspect = |_|
-    42069
+import Event exposing [Event]
 
-main_for_host! : I32 => (I32 -> I32)
-main_for_host! = |_|
-    inspect
+setup_callback_for_host! : I32 => (Event -> Msg)
+setup_callback_for_host! = |_|
+    on_event
+# wrapped = |e| Box.box (on_event e)
+# wrapped
+
+handle_callback_for_host! : Msg => {}
+handle_callback_for_host! = |boxed_msg|
+    msg = boxed_msg
+    # msg = Box.unbox boxed_msg
+    handle! msg
 
