@@ -114,14 +114,12 @@ pub fn call_roc_callback(captures: *const Captures) -> *const Msg {
 
     unsafe {
         let msg_size = size();
-        println!("msg size: {msg_size}");
         let ret = if msg_size == 0 {
             std::ptr::NonNull::dangling().as_ptr()
         } else {
             roc_alloc(size() as usize, 0) as *mut Msg
         };
         caller(&0, captures, ret);
-        println!("wow");
         ret as *const Msg
     }
 }

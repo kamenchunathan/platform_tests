@@ -5,17 +5,21 @@ import pf.Effects exposing [print!]
 
 Msg : [
     OnInput Str,
+    NoOp,
 ]
 
 on_event : Event -> Msg
 on_event = |event|
     when event is
         { type: "onInput" } -> OnInput "Hello world"
-        _ -> OnInput "other"
+        _ -> NoOp
 
 handle! : Msg => {}
 handle! = |msg|
     when msg is
         OnInput val ->
             print! "input ${val}"
+
+        NoOp ->
+            print! "NoOp"
 

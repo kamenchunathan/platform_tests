@@ -13,15 +13,13 @@ platform "wow" requires { Msg } {
 
 import Event exposing [Event]
 
-setup_callback_for_host! : I32 => (Event -> Msg)
+setup_callback_for_host! : I32 => (Event -> Box Msg)
 setup_callback_for_host! = |_|
-    on_event
-# wrapped = |e| Box.box (on_event e)
-# wrapped
+    wrapped = |e| Box.box (on_event e)
+    wrapped
 
-handle_callback_for_host! : Msg => {}
+handle_callback_for_host! : Box Msg => {}
 handle_callback_for_host! = |boxed_msg|
-    msg = boxed_msg
-    # msg = Box.unbox boxed_msg
+    msg = Box.unbox boxed_msg
     handle! msg
 
