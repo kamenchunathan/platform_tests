@@ -27,4 +27,4 @@ build-examples:
 
 clean:
     cargo clean
-    rm -f platform/{dynhost,libapp.so,linux-x64.{a,rm},metadata_linux-x64.rm,libapp} examples/*.ll
+    rm -rf platform/{dynhost,libapp.so,linux-x64.{a,rm},metadata_linux-x64.rm,libapp} examples/*.ll out
