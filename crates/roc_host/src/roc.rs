@@ -91,35 +91,42 @@ pub fn call_roc_setup_callback() -> *const Captures {
     extern "C" {
         #[link_name = "roc__setup_callback_for_host_1_exposed_generic"]
         fn caller(_: *mut Captures, _: i32);
+
+        #[link_name = "roc__setup_callback_for_host_1_exposed_size"]
+        fn size() -> usize;
     }
 
-    let mut captures = Captures {
-        _data: (),
-        _marker: std::marker::PhantomData,
-    };
-
-    unsafe { caller(&mut captures, 0) };
-    &captures as *const Captures
+    unsafe {
+        let captures = roc_alloc(size(), 0) as *mut Captures;
+        caller(captures, 0);
+        captures as *const Captures
+    }
 }
 
-pub fn call_roc_callback(captures: *const Captures) -> Msg {
+pub fn call_roc_callback(captures: *const Captures) -> *const Msg {
     extern "C" {
         #[link_name = "roc__setup_callback_for_host_0_caller"]
         fn caller(_: *const i32, _: *const Captures, _: *mut Msg);
+
+        #[link_name = "roc__setup_callback_for_host_0_result_size"]
+        fn size() -> isize;
     }
 
-    // TODO:  This may limit msg to being only a zst in roc as well
-    let mut ret = Msg {
-        _data: (),
-        _marker: std::marker::PhantomData,
-    };
-
-    unsafe { caller(&0, captures, &mut ret) };
-
-    ret
+    unsafe {
+        let msg_size = size();
+        println!("msg size: {msg_size}");
+        let ret = if msg_size == 0 {
+            std::ptr::NonNull::dangling().as_ptr()
+        } else {
+            roc_alloc(size() as usize, 0) as *mut Msg
+        };
+        caller(&0, captures, ret);
+        println!("wow");
+        ret as *const Msg
+    }
 }
 
-pub fn call__roc_handle_callback(msg: *const Msg) {
+pub fn call_roc_handle_callback(msg: *const Msg) {
     extern "C" {
         #[link_name = "roc__handle_callback_for_host_1_exposed"]
         fn caller(_: *const Msg);
