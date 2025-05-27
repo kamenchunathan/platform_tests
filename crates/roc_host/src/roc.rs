@@ -1,6 +1,6 @@
 use core::ffi::c_void;
 
-use roc_std::{RocBox, RocStr};
+use roc_std::RocStr;
 
 #[no_mangle]
 pub unsafe extern "C" fn roc_alloc(size: usize, _alignment: u32) -> *mut c_void {
@@ -90,7 +90,7 @@ pub struct Msg {
 pub fn call_roc_setup_callback() -> *const Captures {
     extern "C" {
         #[link_name = "roc__setup_callback_for_host_1_exposed_generic"]
-        fn caller(_: *mut Captures, _: i32);
+        fn caller(_: *mut Captures, _: u64);
 
         #[link_name = "roc__setup_callback_for_host_1_exposed_size"]
         fn size() -> usize;
@@ -103,34 +103,29 @@ pub fn call_roc_setup_callback() -> *const Captures {
     }
 }
 
-pub fn call_roc_callback(captures: *const Captures) -> *const Msg {
+pub fn call_roc_callback(captures: *const Captures) -> *mut *mut Msg {
     extern "C" {
         #[link_name = "roc__setup_callback_for_host_0_caller"]
-        fn caller(_: *const i32, _: *const Captures, _: *mut Msg);
+        fn caller(_: *const Captures, _: *const i32, _: *mut *mut Msg);
 
         #[link_name = "roc__setup_callback_for_host_0_result_size"]
         fn size() -> isize;
     }
 
     unsafe {
-        let msg_size = size();
-        let ret = if msg_size == 0 {
-            std::ptr::NonNull::dangling().as_ptr()
-        } else {
-            roc_alloc(size() as usize, 0) as *mut Msg
-        };
-        caller(&0, captures, ret);
-        ret as *const Msg
+        let ret = roc_alloc(size() as usize, 0) as *mut *mut Msg;
+        caller(captures, &0, ret);
+        ret as *mut *mut Msg
     }
 }
 
-pub fn call_roc_handle_callback(msg: *const Msg) {
+pub fn call_roc_handle_callback(msg: *mut *mut Msg) {
     extern "C" {
         #[link_name = "roc__handle_callback_for_host_1_exposed"]
-        fn caller(_: *const Msg);
+        fn caller(_: *mut Msg);
     }
 
-    unsafe { caller(msg) };
+    unsafe { caller(*msg) };
 }
 
 // Effects
