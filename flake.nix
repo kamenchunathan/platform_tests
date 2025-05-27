@@ -41,6 +41,10 @@
             cargo-watch
             rust-analyzer
 
+            llvmPackages_19.libllvm
+            llvmPackages_19.clang
+            llvmPackages_19.lldb
+
             # roc
             rocPkgs.cli
             rocPkgs.lang-server
